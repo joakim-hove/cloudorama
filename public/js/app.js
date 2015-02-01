@@ -1,6 +1,6 @@
 "use strict";
 
-angular.module('ssoDemo', [
+angular.module('cloudish', [
     'ngRoute',
     'ngResource',
     'appRoutes',

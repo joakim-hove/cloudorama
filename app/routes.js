@@ -14,6 +14,12 @@ module.exports = function(app) {
         res.redirect('https://cloudpoint.herokuapp.com/login/localhost');
     });
 
+    app.get('/logout', function(req, res) {
+        console.log('Not logged in');
+        delete req.session.loginData;
+        res.sendFile(path.join(__dirname, '../public/views/notLoggedIn.html'));
+    });
+
     app.get('/login_response', function(req, res) {
       var token = req.query.id;
       var secret = "localhost";

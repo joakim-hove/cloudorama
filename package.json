@@ -1,5 +1,5 @@
 {
-  "name": "SSO-demo",
+  "name": "Cloudish",
   "main": "server.js",
   "dependencies": {
 	"express" : "~4.11.1",
