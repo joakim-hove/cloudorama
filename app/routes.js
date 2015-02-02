@@ -23,7 +23,7 @@ module.exports = function(app) {
 
     app.get('/login_response', function(req, res) {
       var token = req.query.id;
-      var secret = process.env.TIMES || "localhost";
+      var secret = process.env.SECRET || "localhost";
       var url = 'https://cloudpoint.herokuapp.com/validate?secret=' + secret + '&id=' + token;
       console.log('Requesting login data from ' + url);
       request({
