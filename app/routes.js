@@ -41,6 +41,7 @@ module.exports = function(app) {
         }
         else {
             var loginData = JSON.parse(body);
+            console.log(loginData);
             req.session.loginData = loginData;
             res.redirect('/');
         }
