@@ -11,7 +11,8 @@ module.exports = function(app) {
     });
 
     app.get('/login', function(req, res) {
-        res.redirect('https://cloudpoint.herokuapp.com/login/localhost');
+        var appId = process.env.APP_ID || "localhost";
+        res.redirect('https://cloudpoint.herokuapp.com/login/' + appId);
     });
 
     app.get('/logout', function(req, res) {
@@ -22,7 +23,7 @@ module.exports = function(app) {
 
     app.get('/login_response', function(req, res) {
       var token = req.query.id;
-      var secret = "hompetitten2016";
+      var secret = process.env.TIMES || "localhost";
       var url = 'https://cloudpoint.herokuapp.com/validate?secret=' + secret + '&id=' + token;
       console.log('Requesting login data from ' + url);
       request({
