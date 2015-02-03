@@ -1,9 +1,7 @@
-"use strict";
-
-angular.module('cloudish', [
+angular.module('cloudorama', [
     'ngRoute',
     'ngResource',
     'appRoutes',
-    'mainController',
-    'SSOServices'
+    'appControllers',
+    'appServices'
     ]);

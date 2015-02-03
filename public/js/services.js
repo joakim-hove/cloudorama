@@ -1,6 +1,4 @@
-"user strict";
-
-var SSOServices = angular.module('SSOServices', ['ngResource']);
+var SSOServices = angular.module('appServices', ['ngResource']);
 
 SSOServices.factory('UserData', ['$resource',
     function($resource){

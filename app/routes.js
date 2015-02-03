@@ -1,12 +1,10 @@
-"use strict";
-
 var path = require('path');
 var request = require('request');
 
 module.exports = function(app) {
 
     app.get('*', function(req, res, next) {
-        console.log(new Date().toISOString() + ': ' + req.originalUrl);
+        console.log(new Date().toUTCString() + ': ' + req.originalUrl);
         next();
     });
 
@@ -16,8 +14,9 @@ module.exports = function(app) {
     });
 
     app.get('/logout', function(req, res) {
-        console.log('Not logged in');
-        delete req.session.loginData;
+        req.session.regenerate(function onComplete(err) {
+          // req.session is clean
+        })
         res.sendFile(path.join(__dirname, '../public/views/notLoggedIn.html'));
     });
 
@@ -31,17 +30,16 @@ module.exports = function(app) {
         followRedirect: true
         }, function (error, response, body) {
         if (error) {
-            if (response === undefined) {
-                console.log('Error getting ' + url + error)
+            var errorMsg = 'Error getting ' + url + error;
+            if (response !== undefined) {
+                errorMsg += 'Response code: ' + response.statusCode
             }
-            else {
-                console.log('Error getting ' + url + error + ' Response code: ' + response.statusCode);
-            }
+            console.log(errorMsg);
             res.send("Could not connect to " + url + "<br>Login failed. " + error);
         }
         else {
+            console.log("Storing user data in session");
             var loginData = JSON.parse(body);
-            console.log(loginData);
             req.session.loginData = loginData;
             res.redirect('/');
         }
@@ -50,18 +48,17 @@ module.exports = function(app) {
 
     app.get('/api/userData', function(req, res) {
         if (req.session.loginData === undefined) {
-            res.status(401).json({ error: 'User not authenticated' }); //TODO: not working?
+            res.status(401).send("Unauthorized");
         }
         res.json(req.session.loginData);
     });
 
     app.get('*', function(req, res) {
         if (req.session.loginData === undefined) {
-            console.log('Not logged in');
+            console.log('User not logged in. Redirected to login page.');
             res.sendFile(path.join(__dirname, '../public/views/notLoggedIn.html'));
         }
         else {
-            console.log('Logged in');
             res.sendFile(path.join(__dirname, '../public/views/index.html'));
         }
     });
