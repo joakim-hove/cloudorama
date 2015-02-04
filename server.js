@@ -5,12 +5,15 @@ var MongoStore  = require('connect-mongo')(session);
 var cookieParser = require('cookie-parser');
 
 app.use(cookieParser());
+
+var dbUrl = process.env.DBURL || "mongodb://@localhost:27017/sessionstore";
+
 app.use(session({
   secret: '1234567890MODNAR',
   resave: false,
   saveUninitialized: true,
   store : new MongoStore({
-      db: 'sessionstore'
+      url: dbUrl
     })
 }));
 
