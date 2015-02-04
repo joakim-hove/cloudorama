@@ -39,22 +39,40 @@ module.exports = function(app) {
         }
         else {
             console.log("Storing user data in session");
-            var loginData = JSON.parse(body);
-            req.session.loginData = loginData;
+            var userData = convertUserData(body);
+            req.session.userData = userData;
             res.redirect('/');
         }
       });
     });
 
     app.get('/api/userData', function(req, res) {
-        if (req.session.loginData === undefined) {
+        if (req.session.userData === undefined) {
             res.status(401).send("Unauthorized");
         }
-        res.json(req.session.loginData);
+        res.json(req.session.userData);
     });
+    
+    app.get('/api/dataItems', function(req, res) {
+            if (req.session.userData === undefined) {
+                res.status(401).send("Unauthorized");
+            }
+            res.json({
+                "userId" : req.session.userData["email"],
+                "items" : [
+                    "football",
+                    "cycling"
+                ]});
+        });
+        
+    app.post('/api/dataItems', function (req, res) {
+        console.log(req.body);
+        res.json(req.body);
+    });
+    
 
     app.get('*', function(req, res) {
-        if (req.session.loginData === undefined) {
+        if (req.session.userData === undefined) {
             console.log('User not logged in. Redirected to login page.');
             res.sendFile(path.join(__dirname, '../public/views/notLoggedIn.html'));
         }
@@ -63,3 +81,16 @@ module.exports = function(app) {
         }
     });
 };
+
+function convertUserData(userDataFromAD) {
+    var userDataFromADJSON = JSON.parse(userDataFromAD);
+    return {
+        "name" : userDataFromADJSON["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"],
+        "title" : userDataFromADJSON["title"],
+        "email" : userDataFromADJSON["urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress"],
+        "phone" : userDataFromADJSON["phone"],
+        "office" : userDataFromADJSON["physicalDeliveryOfficeName"],
+        "dept" : userDataFromADJSON["extensionAttribute3"] + " " + userDataFromADJSON["extensionAttribute6"],
+        "photo" : userDataFromADJSON["thumbnailPhoto"]
+    };
+}

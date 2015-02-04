@@ -1,20 +1,17 @@
-var mainController = angular.module('appControllers', []);
+var appControllers = angular.module('appControllers', []);
 
-mainController.controller('mainController', ['$scope', 'UserData', function ($scope, UserData) {
+appControllers.controller('mainController', ['$scope', 'UserData', function ($scope, UserData) {
     $scope.tagline = 'To the moon and back!';
-    $scope.userData = {};
-    $scope.userData['name'] = "";
-    $scope.userData['img'] = "";
-    $scope.rawUserData = UserData.query(function () {
-        $scope.userData['name'] = $scope.rawUserData["http://schemas.xmlsoap.org/ws/2005/05/identity/claims/name"];
-        $scope.userData['img'] = $scope.rawUserData['thumbnailPhoto'];
-        $scope.userData['dept'] = $scope.rawUserData['extensionAttribute5'];
-        $scope.userData['title'] = $scope.rawUserData['title'];
-        $scope.userData['email'] = $scope.rawUserData['urn:oasis:names:tc:SAML:2.0:nameid-format:emailAddress'];
-        $scope.userData['desk'] = $scope.rawUserData['physicalDeliveryOfficeName'];
-    });
+    $scope.userData = UserData.query();
 }]);
 
-mainController.controller('notLoggedInController', ['$scope', function ($scope) {
+appControllers.controller('dataEntryController', ['$scope', 'UserData', 'Items', function ($scope, UserData, Items) {
+    $scope.userData = UserData.query();
+    $scope.dataItems = Items.query();
+    console.log($scope.items);
+}]);
+
+
+appControllers.controller('notLoggedInController', ['$scope', function ($scope) {
 
 }]);

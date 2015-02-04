@@ -1,5 +1,13 @@
 <div class="jumbotron text-center">
-    <h1>Page 2</h1>
+    <h2>Items</h2>
 
-    <p>{{ tagline }}</p>
+    <div>
+        Number of entries: {{dataItems.items.length}}
+        <ul class="list-group">
+            <li ng-repeat="item in dataItems.items" class="list-group-item">
+                {{$index + 1}}: {{item}}
+            </li>
+        </ul>
+    </div>
+    
 </div>

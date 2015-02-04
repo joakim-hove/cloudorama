@@ -6,3 +6,10 @@ SSOServices.factory('UserData', ['$resource',
             query: {method:'GET', params:{}, isArray:false}
         });
     }]);
+
+SSOServices.factory('Items', ['$resource',
+    function($resource){
+        return $resource('/api/dataItems', {}, {
+            query: {method:'GET', params:{}, isArray:false}
+        });
+    }]);
