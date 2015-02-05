@@ -53,6 +53,8 @@ module.exports = function(app) {
         res.json(req.session.userData);
     });
     
+    //********* Unfinished code start ******
+    
     app.get('/api/dataItems', function(req, res) {
             if (req.session.userData === undefined) {
                 res.status(401).send("Unauthorized");
@@ -70,6 +72,7 @@ module.exports = function(app) {
         res.json(req.body);
     });
     
+    //********* Unfinished code end ********
 
     app.get('*', function(req, res) {
         if (req.session.userData === undefined) {
