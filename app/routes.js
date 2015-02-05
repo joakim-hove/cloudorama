@@ -1,6 +1,16 @@
 var path = require('path');
 var request = require('request');
+var mongoose = require('mongoose');
+var Item = require('models');
 
+/*
+mongoose.connect('mongodb://localhost/items');
+var db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function (callback) {
+  // yay!
+});
+*/
 module.exports = function(app) {
 
     app.get('*', function(req, res, next) {
@@ -57,12 +67,12 @@ module.exports = function(app) {
             if (req.session.userData === undefined) {
                 res.status(401).send("Unauthorized");
             }
-            res.json({
-                "userId" : req.session.userData["email"],
-                "items" : [
-                    "football",
-                    "cycling"
-                ]});
+            Item.find(function(err, items)) {
+                if (err) {
+                    res.send(err);
+                }
+                res.json(items);
+            }
         });
         
     app.post('/api/dataItems', function (req, res) {

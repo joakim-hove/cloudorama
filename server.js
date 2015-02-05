@@ -4,7 +4,7 @@ var session = require('express-session');
 var MongoStore  = require('connect-mongo')(session);
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var db = require('./app/db-config');
 
 var dbUrl = process.env.DBURL || "mongodb://@localhost:27017/sessionstore";
 var port = process.env.PORT || 9000;
