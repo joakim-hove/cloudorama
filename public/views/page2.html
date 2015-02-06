@@ -1,12 +1,16 @@
 <div class="jumbotron text-center">
     <h2>Items</h2>
 
-    <div>
+    <div style="margin-left: auto; margin-right: auto; width:300px;">
         Number of entries: {{dataItems.items.length}}
         <ul class="list-group">
             <li ng-repeat="item in dataItems.items" class="list-group-item">
-                {{$index + 1}}: {{item}}
+                {{$index + 1}}: {{item}} <button type="button" class="btn btn-default btn-sm pull-right" aria-label="Left Align" ng-click="removeItem(item)">
+                <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
+            </button>
             </li>
+            <li class="list-group-item"><input ng-model="newItem"/><button type="button" class="btn btn-default btn-sm pull-right"
+                aria-label="Left Align" ng-click="addItem(newItem)"><span class="glyphicon glyphicon-plus" aria-hidden="true"></span></button>
         </ul>
     </div>
     
