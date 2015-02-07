@@ -4,20 +4,23 @@ var session = require('express-session');
 var MongoStore  = require('connect-mongo')(session);
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var db = require('./app/db-config');
+var mongoose = require('mongoose');
 
-
-var dbUrl = process.env.DBURL || "mongodb://@localhost:27017/sessionstore";
 var port = process.env.PORT || 9000;
 
 app.use(bodyParser.json());
 app.use(cookieParser());
+
+mongoose.connect(db.url);
+mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 
 app.use(session({
   secret: '1234567890MODNAR',
   resave: false,
   saveUninitialized: true,
   store : new MongoStore({
-      url: dbUrl
+      url: db.url
     })
 }));
 
