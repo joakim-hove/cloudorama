@@ -63,7 +63,7 @@ module.exports = function(app) {
             next();
         }
     });
-    
+
     
     app.get('/api/dataItems', function(req, res) {
         var userId = req.session.userData.userId;
