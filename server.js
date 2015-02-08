@@ -6,6 +6,8 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var db = require('./app/db-config');
 var MongoClient = require('mongodb').MongoClient
+var loginRoutes = require('./app/routes/login');
+var apiRoutes = require('./app/routes/api');
 
 var port = process.env.PORT || 9000;
 
@@ -22,7 +24,8 @@ app.use(session({
 }));
 
 app.use(express.static(__dirname + '/public'));
-require('./app/routes')(app);
+app.use("/api", apiRoutes);
+app.use("/", loginRoutes);
 
 app.listen(port, function() {
   console.log("Node app is running at localhost:" + port);
