@@ -5,15 +5,12 @@ var MongoStore  = require('connect-mongo')(session);
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var db = require('./app/db-config');
-var mongoose = require('mongoose');
+var MongoClient = require('mongodb').MongoClient
 
 var port = process.env.PORT || 9000;
 
 app.use(bodyParser.json());
 app.use(cookieParser());
-
-mongoose.connect(db.url);
-mongoose.connection.on('error', console.error.bind(console, 'connection error:'));
 
 app.use(session({
   secret: '1234567890MODNAR',

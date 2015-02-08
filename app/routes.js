@@ -1,7 +1,7 @@
 var path = require('path');
 var request = require('request');
-var mongoose = require('mongoose');
-var Item = require('./models');
+var dbConf = require('./db-config');
+var MongoClient = require('mongodb').MongoClient
 
 module.exports = function(app) {
 
@@ -64,50 +64,65 @@ module.exports = function(app) {
         }
     });
 
-    
+
     app.get('/api/dataItems', function(req, res) {
         var userId = req.session.userData.userId;
-        var query = Item.where({_id : userId});
-        query.findOne(function(err, items) {
-            if (err) { res.send(err); }
-            else {
-                res.json(items);
-            }
+        MongoClient.connect(dbConf.url, function(err, db) {
+            if(err) { return console.dir(err); }
+            db.collection('items').findOne({_id:userId}, function(err, item) {
+                if (!item) {
+                    res.send({_id:userId, items:[]});
+                }
+                else {
+                    res.json(item);
+                }
+            });
         });
     });
+
 
     app.post('/api/dataItems', function (req, res) {
         var input = req.body;
         var userId = req.session.userData.userId;
-        var query = Item.where({_id : userId});
-        query.findOne(function (err, itemsForUser){
-            if (err) { return console.error(err); }
-            if (!itemsForUser) {
-                var newItem = new Item({'_id' : userId, 'items': [input.item]});
-                saveItemAndReturnResponse(newItem, res);
-            }
-            else {
-                if (itemsForUser.items.indexOf(input.item) == -1) {
-                    itemsForUser.items.push(input.item);
+        
+        MongoClient.connect(dbConf.url, function(err, db) {
+            if(err) { return console.dir(err); }
+            db.collection('items').findOne({_id:userId}, function(err, item) {
+                if (!item) {
+                    item = {_id: userId, items: [input.item]};
                 }
-                saveItemAndReturnResponse(itemsForUser, res);
-            }
+                else if (item.items.indexOf(input.item) == -1) {
+                    item.items.push(input.item);
+                }
+                db.collection('items').update({_id: userId}, item, {upsert: true}, function(err, item){
+                    res.location('/api/dataItems');
+                    res.status(201).send("ok");
+                });
+            });
         });
     });
 
+
     app.delete('/api/dataItems/', function (req, res) {
         var itemToRemove = req.query.item;
+        var input = req.body;
         var userId = req.session.userData.userId;
-        var query = Item.where({_id : userId});
-        query.findOne(function (err, itemsForUser){
-            if (err) { return console.error(err); }
-            if (!itemsForUser || itemsForUser.items.indexOf(itemToRemove) == -1) {
-                res.status(400).send("item does not exits");
-            }
-            else {
-                itemsForUser.items.remove(itemToRemove);
-                saveItemAndReturnResponse(itemsForUser, res);
-            }
+        
+        MongoClient.connect(dbConf.url, function(err, db) {
+            if(err) { return console.dir(err); }
+            db.collection('items').findOne({_id:userId}, function(err, item) {
+                if (!item) {
+                    res.status(400).send("items does not exits for " + userId);
+                }
+                else {
+                    var index = item.items.indexOf(itemToRemove);
+                    item.items.splice(index, 1);
+                    db.collection('items').update({_id: userId}, item, function(err, item){
+                        res.location('/api/dataItems');
+                        res.status(201).send("ok");
+                    }); 
+                }
+            });
         });
     });
 
@@ -138,14 +153,4 @@ function convertUserData(userDataFromAD) {
         "dept" : json["extensionAttribute3"] + " " + json["extensionAttribute6"],
         "photo" : json["thumbnailPhoto"]
     };
-}
-
-var saveItemAndReturnResponse = function(item, res) {
-    item.save(function (err, newItem) {
-         if (err) {
-             return console.error(err);
-         }
-         res.location('/api/dataItems');
-         res.status(201).send("ok");
-    });
 }
